@@ -128,21 +128,31 @@ class Proxies(object):
 
 class Darkdump(object):
     def crawl(self, query, amount):      
-        clr = Colors()
-        prox = Proxies()
+        clr def crawl(self, query, amount):      
+    clr = Colors()
+    prox = Proxies()
 
-        headers = random.choice(Headers().useragent)
-        if Configuration.DARKDUMP_PROXY == True:
-            prox.assign_proxy()
-            proxy = prox.get_proxy()
-            print(clr.BOLD + clr.P + "~:~ Using Proxy: " + clr.C + proxy + clr.END + '\n')
-            page = requests.get(Configuration.__darkdump_api__ + query, proxies=prox.get_proxy_dict())
-        else: 
-            page = requests.get(Configuration.__darkdump_api__ + query) 
-        page.headers = headers
+    headers = random.choice(Headers().useragent)
+    if Configuration.DARKDUMP_PROXY == True:
+        prox.assign_proxy()
+        proxy = prox.get_proxy()
+        print(clr.BOLD + clr.P + "~:~ Using Proxy: " + clr.C + proxy + clr.END + '\n')
+        page = requests.get(Configuration.__darkdump_api__ + query, proxies=prox.get_proxy_dict())
+    else: 
+        page = requests.get(Configuration.__darkdump_api__ + query) 
+    page.headers = headers
 
-        soup = BeautifulSoup(page.content, 'html.parser')
-        results = soup.find(id='ahmiaResultsPage')
+    # Print the contents of the page and the status code
+    print(f"Page contents: {page.content}")
+    print(f"Status code: {page.status_code}")
+
+    soup = BeautifulSoup(page.content, 'html.parser')
+    results = soup.find(id='ahmiaResultsPage')
+
+    # Print the results object
+    print(f"Results object: {results}")
+
+    if results is not None:
         second_results = results.find_all('li', class_='result')
         res_length = len(second_results)
 
@@ -161,8 +171,11 @@ class Darkdump(object):
                         clr.END)
             else:
                 print(clr.BOLD + clr.R + "[!] No results found." + clr.END)
-        except IndexError as ie:
-            print(clr.BOLD + clr.O + f"[~] No more results to be shown ({ie}): " + clr.END)
+        except IndexError: # Add an except clause for IndexError
+            print(clr.BOLD + clr.R + "[!] The number of results is less than the requested amount." + clr.END)
+    else:
+        print(clr.BOLD + clr.R + "[!] No results object found. The structure of the web page may have changed." + clr.END)
+        
 
 def darkdump_main():
     clr = Colors()
