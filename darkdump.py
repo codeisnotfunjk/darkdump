@@ -128,7 +128,7 @@ class Proxies(object):
 
 class Darkdump(object):
     def crawl(self, query, amount):      
-        clr def crawl(self, query, amount):      
+        def crawl(self, query, amount):      
     clr = Colors()
     prox = Proxies()
 
