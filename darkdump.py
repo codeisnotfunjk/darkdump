@@ -128,53 +128,52 @@ class Proxies(object):
 
 class Darkdump(object):
     def crawl(self, query, amount):      
-        def crawl(self, query, amount):      
-    clr = Colors()
-    prox = Proxies()
+        clr = Colors()
+        prox = Proxies()
 
-    headers = random.choice(Headers().useragent)
-    if Configuration.DARKDUMP_PROXY == True:
-        prox.assign_proxy()
-        proxy = prox.get_proxy()
-        print(clr.BOLD + clr.P + "~:~ Using Proxy: " + clr.C + proxy + clr.END + '\n')
-        page = requests.get(Configuration.__darkdump_api__ + query, proxies=prox.get_proxy_dict())
-    else: 
-        page = requests.get(Configuration.__darkdump_api__ + query) 
-    page.headers = headers
+        headers = random.choice(Headers().useragent)
+        if Configuration.DARKDUMP_PROXY == True:
+            prox.assign_proxy()
+            proxy = prox.get_proxy()
+            print(clr.BOLD + clr.P + "~:~ Using Proxy: " + clr.C + proxy + clr.END + '\n')
+            page = requests.get(Configuration.__darkdump_api__ + query, proxies=prox.get_proxy_dict())
+        else: 
+            page = requests.get(Configuration.__darkdump_api__ + query) 
+        page.headers = headers
 
-    # Print the contents of the page and the status code
-    print(f"Page contents: {page.content}")
-    print(f"Status code: {page.status_code}")
+        # Print the contents of the page and the status code
+        print(f"Page contents: {page.content}")
+        print(f"Status code: {page.status_code}")
 
-    soup = BeautifulSoup(page.content, 'html.parser')
-    results = soup.find(id='ahmiaResultsPage')
+        soup = BeautifulSoup(page.content, 'html.parser')
+        results = soup.find(id='ahmiaResultsPage')
 
-    # Print the results object
-    print(f"Results object: {results}")
+        # Print the results object
+        print(f"Results object: {results}")
 
-    if results is not None:
-        second_results = results.find_all('li', class_='result')
-        res_length = len(second_results)
+        if results is not None:
+            second_results = results.find_all('li', class_='result')
+            res_length = len(second_results)
 
-        for iterator in range(res_length):
-            Configuration.descriptions.append(second_results[iterator].find('p').text)
-            Configuration.urls.append(second_results[iterator].find('cite').text)
-        # Remove duplicates
-        Configuration.descriptions = list(dict.fromkeys(Configuration.descriptions))
-        Configuration.urls = list(dict.fromkeys(Configuration.urls))
-        try:
-            if len(Configuration.descriptions) >= Configuration.DARKDUMP_MIN_DATA_RETRIEVE_LENGTH:
-                for iterator in range(amount):
-                    site_url = Configuration.urls[iterator]
-                    site_description = Configuration.descriptions[iterator]
-                    print(clr.BOLD + clr.G + f"[+] Website: {site_description}\n\t> Onion Link: {clr.R}{site_url}\n" + 
-                        clr.END)
-            else:
-                print(clr.BOLD + clr.R + "[!] No results found." + clr.END)
-        except IndexError: # Add an except clause for IndexError
-            print(clr.BOLD + clr.R + "[!] The number of results is less than the requested amount." + clr.END)
-    else:
-        print(clr.BOLD + clr.R + "[!] No results object found. The structure of the web page may have changed." + clr.END)
+            for iterator in range(res_length):
+                Configuration.descriptions.append(second_results[iterator].find('p').text)
+                Configuration.urls.append(second_results[iterator].find('cite').text)
+            # Remove duplicates
+            Configuration.descriptions = list(dict.fromkeys(Configuration.descriptions))
+            Configuration.urls = list(dict.fromkeys(Configuration.urls))
+            try:
+                if len(Configuration.descriptions) >= Configuration.DARKDUMP_MIN_DATA_RETRIEVE_LENGTH:
+                    for iterator in range(amount):
+                        site_url = Configuration.urls[iterator]
+                        site_description = Configuration.descriptions[iterator]
+                        print(clr.BOLD + clr.G + f"[+] Website: {site_description}\n\t> Onion Link: {clr.R}{site_url}\n" + 
+                            clr.END)
+                else:
+                    print(clr.BOLD + clr.R + "[!] No results found." + clr.END)
+            except IndexError: # Add an except clause for IndexError
+                print(clr.BOLD + clr.R + "[!] The number of results is less than the requested amount." + clr.END)
+        else:
+            print(clr.BOLD + clr.R + "[!] No results object found. The structure of the web page may have changed." + clr.END)
         
 
 def darkdump_main():
@@ -231,4 +230,3 @@ def darkdump_main():
 
 if __name__ == "__main__":
     darkdump_main()
-
